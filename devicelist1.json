@@ -1,0 +1,16 @@
+{
+	"devices": [
+		{
+			"devicename": "bulb2",
+			"pairing-opt": ["code-thread", {"thnwopsDataset":"hex:0e080000000000010000000300001935060004001fffe002089e223c98bd537de20708fd5668bace2fa45305103a4c47a4205816261eb6a67dc61b7c1a030f4f70656e5468726561642d39346133010294a30410fe6ed779a25b396a32a264498a8e69e30c0402a0f7f8", "QRCode":"MT:CWBT0IAN16NBQM5F210", "productiondev":"1"}],
+			"nodeid":"7",
+			"type": "light",
+			"ProducID": "1114",
+			"VendorID": "114"
+		}	
+	]
+
+
+}
+
+
