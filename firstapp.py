@@ -132,6 +132,30 @@ def getip():
     s = subprocess.check_output([ipstring], stdin=None, stderr=None, shell=True, universal_newlines=True)
     if len(s) != 0:
         reqipaddr = s[0:len(s)-1]
+def TuyaDeviceData(pluginst):
+    pluginst.ReceiveDeviceData()    
+
+@app.route('/devicestats')
+def RenderDevicestat():
+       global TuyaPlug1
+       global TuyaPlug2
+       global devicelist1
+       data={}
+       list=[]
+       for dev in devicelist1:
+           if dev["type"] == "plug":
+               if dev["name"] == "plug1":
+                   elecconsumption, data = TuyaPlug1.Getdata()
+               elif dev["name"] == "plug2":
+                   elecconsumption, data = TuyaPlug2.Getdata()
+           if dev["type"] == "plug":        
+               print(data)
+               sys.stdout.flush()
+               if elecconsumption != 0 and data["CurVoltage"] != "InValid":
+                   data["CurPwrUsage"] = str(elecconsumption);
+               list.append(data)    
+       print(list)
+       return jsonify(listdata=list)
     
 
 def on_connect(client, userdata, flags, rc):
@@ -180,6 +204,15 @@ def hello_world():
     Spawn_Paho()
     pathname=os.environ.get('TMPDIR')
     fname=pathname + '/devicelist.json'
+    devstat = os.environ.get('DEVSTATS')
+    if devstat == "ON":
+        TuyaPlug1 = tinytuyaapp.TinyTuyaPlugData("plug1", 'd774d88399af8258ddjmjz', "192.168.1.83", 'U/$B2?kq|iO8}l`j')
+        TuyaPlug2 = tinytuyaapp.TinyTuyaPlugData("plug2", "d7934fd0d469f1b0d6lmza", "192.168.1.80", "3769c7cba9b2d5ba")
+    
+        t2= Thread(target=TuyaDeviceData, args=(TuyaPlug2,))
+        t2.start()
+        t1= Thread(target=TuyaDeviceData, args=(TuyaPlug1,))
+        t1.start()
     DeviceDataBase=DeviceList.getdata(fname)
     devicelist1=DeviceList.GetDeviceList(DeviceDataBase["devices"]);
     #devicelist=json.dumps(devicelist1)
@@ -188,11 +221,11 @@ def hello_world():
     isdebug=os.environ.get('DEBUG')
     forwardedip=os.environ.get('FORWARDEDIP')
     if isdebug == "true": #This is original woking code as on Aug17 2023 	
-        return render_template('/login_dummy.html', ipaddr=forwardedip, devicelist=devicelist1)
+        return render_template('/login_dummy.html', ipaddr=forwardedip, devdata=devstat, devicelist=devicelist1)
     elif isdebug== "false":
-        return render_template('/login_dummy_nodbg.html', ipaddr=forwardedip, devicelist=devicelist1)
+        return render_template('/login_dummy_nodbg.html', ipaddr=forwardedip, devdata=devstat, devicelist=devicelist1)
     else:    
-        return render_template('/login_dummy.html', ipaddr=forwardedip, devicelist=devicelist1)
+        return render_template('/login_dummy.html', ipaddr=forwardedip, devdata=devstat, devicelist=devicelist1)
 # main driver function
 if __name__ == '__main__':
  

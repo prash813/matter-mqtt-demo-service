@@ -11,8 +11,8 @@
 </div>
 <script>
 var staticurl="{{ url_for('static', filename='') }}"; 
-//alert(staticurl);
-onloadfunction('{{devicelist|tojson|safe}}', staticurl);
+alert(staticurl);
+onloadfunction('{{devicelist|tojson|safe}}', staticurl, '{{devdata}}');
 //var elem=document.getElementById("divdata");
 //alert("Hi");
 //var userdata = JSON.parse('{{devicelist|tojson|safe}}');
