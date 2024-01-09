@@ -146,6 +146,25 @@ def RenderDevicestat():
        global TuyaPlug1
        global TuyaPlug2
        global devicelist1
+       global NewPahoMsg
+       global NewMsgFlag
+       global pahoclient
+       count=0
+       pahoclient.publish("devicestatreq")
+       pahoclient.subscribe("devicestatresp", 0)
+       while True:
+        if count > 600 or NewMsgFlag == True:
+            break
+        count+=1
+        time.sleep(0.200)
+    if NewMsgFlag == True:
+        NewMsgFlag = False
+    else:
+        NewPahoMsg = json.dumps({"listdata": "NoData"})
+
+    pahoclient.unsubscribe("devicestatresp")        
+    return NewPahoMsg;
+   ''' 
        data={}
        list=[]
        for dev in devicelist1:
@@ -160,7 +179,8 @@ def RenderDevicestat():
                if elecconsumption != 0 and data["CurVoltage"] != "InValid":
                    data["CurPwrUsage"] = str(elecconsumption);
                list.append(data)    
-       print(list)
+       '''
+           
        return jsonify(listdata=list)
     
 
