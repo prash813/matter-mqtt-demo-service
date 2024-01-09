@@ -63,11 +63,69 @@ function PairOrUnpair(userdata, btnobject)
 	xhttp.open("GET", request, true);
 	xhttp.send();
 	
-}
-//staticurl is useledd param
-function onloadfunction(var2, staticurl)
+};
+function UpdateDataOnPage(responseTxt1, userdata)
+{
+	var curstatus;
+	var responseTxt;
+	//try 
+	{
+	//	var tmp = '{{ responseTxt1 | tojson }}';
+	//	var tmp = JSON.parse('{{responseTxt1|tojson|safe}}');
+		responseTxt2=responseTxt1.listdata;
+		//console.log(userdata)
+		for(j=0; j<responseTxt2.length; j++) {
+			responseTxt=responseTxt2[j];
+			for(i=0; i< userdata.length; i++) {
+
+				if(responseTxt.devicename != userdata[i].name)
+					continue;
+				console.log(responseTxt)
+					elementid="info" + userdata[i].name;
+				var infotxtnode = document.getElementById(elementid);
+				if (userdata[i].type == "plug")
+					if (responseTxt.CurCurrent == "Invalid" || responseTxt.CurCurrent == "0")
+						curstatus="Off ";		
+				infotxtnode.innerHTML= "&emsp;&emsp;&emsp;&emsp;<b>Status: </b>" + curstatus + "<br>" + "&emsp;&emsp;&emsp;&emsp;<b>Current(mA): </b>" + responseTxt.CurCurrent  + "<br>" + "&emsp;&emsp;&emsp;&emsp;<b>Voltage(V): </b>" + responseTxt.CurVoltage +  "<br>" + "&emsp;&emsp;&emsp;&emsp;<b>Power(W): </b>" +  responseTxt.CurPower + "<br>" + "&emsp;&emsp;&emsp;&emsp;<b>Electricity Usage(kWh): </b>" + responseTxt.CurPwrUsage; 
+				//break;
+			}
+
+		}
+	}
+	//catch{console.log("something failed while parsing data stats response");}
+	//catch{console.log("got some errors");}
+};
+
+function GetDeviceData(userdata)
 {
 	try {
+		var ipaddr = document.getElementById("ipaddr"); 
+		//	btnobject.setAttribute("innerHTML", "Unpair");
+
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState == 4 && xhttp.status == 200) {
+				var responseTxt = JSON.parse(xhttp.responseText);
+				let str = responseTxt.success;
+				//console.log(xhttp.responseTxt)
+				console.log(responseTxt)
+				UpdateDataOnPage(responseTxt, userdata)
+			}
+		};
+
+		var random1=Math.random();
+		var request="http://"  + ipaddr.innerHTML + ":" + "5001/devicestats?" +  "version=" + random1;
+		//console.log(request);
+		xhttp.open("GET", request, true);
+		xhttp.send();
+	}
+	catch{console.log("something failed while sending data stats request");}
+
+};
+//staticurl is useledd param
+function onloadfunction(var2, staticurl, devdata)
+{
+	try{
 		var elem=document.getElementById("divdata");
 		var datadiv = document.getElementById("divdata2");
 		userdata = JSON.parse(var2);
