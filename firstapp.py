@@ -1,16 +1,22 @@
 # Importing flask module in the project is mandatory
 # An object of Flask class is our WSGI application.
-from flask import Flask, request
+import tinytuya_monitor as tinytuyaapp
+from flask import Flask, request, jsonify
 from flask import render_template
 import os
 import json
 from devicelist import DeviceList
 import subprocess
+from threading import Thread
 import time
 import paho.mqtt.client as mqtt
+
+import sys
 devicelist1 = None
 reqipaddr = None
 DeviceDataBase= None
+TuyaPlug1 = None
+TuayaPlug2 =  None
 NewPahoMsg=None
 NewMsgFlag=False
 pahoclient=None
